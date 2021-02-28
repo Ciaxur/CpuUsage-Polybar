@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// CPU Struct
 type CPU struct {
 	cpu []string
 }
