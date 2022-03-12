@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 // CPU Struct
@@ -51,18 +52,25 @@ func getCPUOutput() []byte {
 	return out
 }
 
+type Arguments struct {
+	FontColor *string
+	IconColor *string
+}
+
+/**
+ * Parses command-line arguments
+ */
+func argParse() *Arguments {
+	args := Arguments{}
+	args.FontColor = kingpin.Flag("font", "Hex value of the font foreground color").Default("#FF").String()
+	args.IconColor = kingpin.Flag("icon", "Hex value of the icon foreground color").Default("#FF").String()
+	kingpin.Parse()
+	return &args
+}
+
 func main() {
 	// Assign Polybar Color from Args
-	iconClr := "#FF" // Default
-	strClr := "#FF"  // Default
-
-	// Verify Given Arguments
-	if len(os.Args) > 1 {
-		iconClr = os.Args[1]
-	}
-	if len(os.Args) > 2 {
-		strClr = os.Args[2]
-	}
+	args := argParse()
 
 	// CONFIG USED
 	interval := 1 * time.Second // Seconds
@@ -83,7 +91,7 @@ func main() {
 		dJiff := tJ2 - tJ1
 		usage := (float32(dWork) / float32(dJiff)) * 100.00
 		//		fmt.Printf("Usage: %.2f%%\n", usage)
-		fmt.Printf("%%{F%s} %%{F%s}%.1f%%\n", iconClr, strClr, usage)
+		fmt.Printf("%%{F%s} %%{F%s}%.1f%%\n", *args.IconColor, *args.FontColor, usage)
 
 		// Store Previous Values
 		tW1 = tW2
